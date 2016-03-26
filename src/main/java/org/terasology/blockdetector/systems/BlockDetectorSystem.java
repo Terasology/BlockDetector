@@ -16,8 +16,6 @@
 package org.terasology.blockdetector.systems;
 
 import com.google.common.collect.Sets;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.terasology.audio.AudioManager;
 import org.terasology.entitySystem.entity.EntityRef;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
@@ -34,17 +32,16 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockUri;
 
 import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
- * The main system containing all block detector logic.
+ * The main system containing all block detector logic
  */
 @RegisterSystem
 public class BlockDetectorSystem extends BaseComponentSystem implements UpdateSubscriberSystem {
-    private static Logger logger = LoggerFactory.getLogger(BlockDetectorSystem.class);
-
     @In
     private WorldProvider worldProvider;
 
@@ -58,48 +55,92 @@ public class BlockDetectorSystem extends BaseComponentSystem implements UpdateSu
     private AudioManager audioManager;
 
     /**
-     * The detector's range.
+     * The detector's range
      * <p>
-     * Blocks will be detected in a cube centered at the player with an edge length of 2*detectorRange + 1.
+     * Blocks will be detected in a cube centered at the player with an edge length of 2*detectorRange + 1
      */
     private int detectorRange;
 
     private float timeSinceLastUpdate;
-    private float updateFrequency;
+    private float updateInterval;
 
     /**
-     * The block types that will be detected.
+     * The block types that will be detected
      */
     private Set<String> detectedUriTypes;
 
     /**
-     * The items that act as detectors when held.
+     * The items that act as detectors when held
      */
     private Set<String> detectorItemNames;
+
+    private TimerTask playSound;
+    private Timer timer;
 
     @Override
     public void initialise() {
         super.initialise();
 
-        detectorRange = 32;
-        updateFrequency = 1.0f;
+        detectorRange = 16;
+        updateInterval = 1.0f;
 
         // Temporarily populated with easy-to-test items
         detectedUriTypes = Sets.newHashSet("core:Iris");
         detectorItemNames = Sets.newHashSet("Core:shovel");
+
+        initTimer();
     }
 
+    /**
+     * Runs the main detectBlocks() function at an interval roughly equal to updateInterval.
+     *
+     * @param delta The time (in seconds) since the last engine update.
+     */
     @Override
     public void update(float delta) {
         timeSinceLastUpdate += delta;
-        if (timeSinceLastUpdate >= updateFrequency) {
+        if (timeSinceLastUpdate >= updateInterval) {
             detectBlocks();
-            timeSinceLastUpdate -= updateFrequency;
+            timeSinceLastUpdate -= updateInterval;
+        }
+    }
+
+    @Override
+    public void shutdown() {
+        shutdownTimer();
+    }
+
+    /**
+     * Initialises the TimerTask and Timer
+     */
+    private void initTimer() {
+        playSound = new TimerTask() {
+            @Override
+            public void run() {
+                audioManager.playSound(Assets.getSound("BlockDetector:ScannerBeep").get());
+            }
+        };
+        timer = new Timer();
+    }
+
+    /**
+     * Gracefully shuts down the TimerTask and Timer
+     */
+    private void shutdownTimer() {
+        if (playSound != null) {
+            playSound.cancel();
+            playSound = null;
+        }
+
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+            timer = null;
         }
     }
 
     /**
-     * Main block detection method.
+     * Main block detection method
      */
     private void detectBlocks() {
         // Get the name of the item held by the player
@@ -114,20 +155,22 @@ public class BlockDetectorSystem extends BaseComponentSystem implements UpdateSu
 
         // Check if it is a detector
         if (name == null || !detectorItemNames.contains(name)) {
+            shutdownTimer();
             return;
         }
 
         // Get the current block position, rounded down
-        Vector3i blockPosition = new Vector3i(localPlayer.getPosition(), RoundingMode.FLOOR);
+        Vector3i playerPosition = new Vector3i(localPlayer.getPosition(), RoundingMode.FLOOR);
 
-        Map<BlockUri, Integer> detectedBlocks = new HashMap<>();
+        Set<Vector3i> detectedBlocks = new HashSet<>();
 
         // Iterate through all the blocks within the detector's range
-        for (int x = blockPosition.x - detectorRange; x <= blockPosition.x + detectorRange; x++) {
-            for (int y = blockPosition.y - detectorRange; y <= blockPosition.y + detectorRange; y++) {
-                for (int z = blockPosition.z - detectorRange; z <= blockPosition.z + detectorRange; z++) {
+        for (int x = playerPosition.x - detectorRange; x <= playerPosition.x + detectorRange; x++) {
+            for (int y = playerPosition.y - detectorRange; y <= playerPosition.y + detectorRange; y++) {
+                for (int z = playerPosition.z - detectorRange; z <= playerPosition.z + detectorRange; z++) {
                     // Get the current block
-                    Block block = worldProvider.getBlock(new Vector3i(x, y, z));
+                    Vector3i blockPosition = new Vector3i(x, y, z);
+                    Block block = worldProvider.getBlock(blockPosition);
 
                     // Get the block's type via URI
                     BlockUri uri = block.getURI();
@@ -135,26 +178,36 @@ public class BlockDetectorSystem extends BaseComponentSystem implements UpdateSu
                     if (detectedUriTypes.contains(uri.toString())) {
                         // If there are no blocks of the given type, add it to the map
                         // Otherwise increment the amount of blocks of the given type
-                        detectedBlocks.put(uri, detectedBlocks.containsKey(uri) ? detectedBlocks.get(uri) + 1 : 1);
+                        detectedBlocks.add(blockPosition);
                     }
                 }
             }
         }
 
-        // Get the total amount of detected blocks
-        int detectedCount = 0;
-        for (BlockUri uri : detectedBlocks.keySet()) {
-            detectedCount += detectedBlocks.get(uri);
-        }
+        if (detectedBlocks.size() > 0) {
+            // Get the minimum distance to a block
 
-        if (detectedCount > 0) {
-            logger.info("Found {} block(s): {}", detectedCount, String.valueOf(detectedBlocks));
+            int minDistance = Integer.MAX_VALUE;
+            for (Vector3i block : detectedBlocks) {
+                int distance = (int) Math.sqrt(
+                        Math.pow(block.getX() - playerPosition.getX(), 2)
+                                + Math.pow(block.getY() - playerPosition.getY(), 2)
+                                + Math.pow(block.getZ() - playerPosition.getZ(), 2));
+                minDistance = Math.min(minDistance, distance);
+            }
 
-            // Play sound to indicate block in range
-            // TODO: loop this; frequency should change depending on block range
-            audioManager.playSound(Assets.getSound("BlockDetector:ScannerBeep").get());
+            // Get the signal frequency depending on the distance
+            int frequencyLow = 100;
+            int frequencyHigh = 2000;
+
+            int frequency = frequencyLow + (frequencyHigh - frequencyLow) * minDistance / detectorRange;
+
+            // Reset and recreate the sound timer with the calculated frequency
+            shutdownTimer();
+            initTimer();
+            timer.scheduleAtFixedRate(playSound, 0, frequency);
         } else {
-            logger.info("No blocks found :(");
+            shutdownTimer();
         }
     }
 }

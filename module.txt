@@ -4,6 +4,9 @@
     "author" : "rzats",
     "displayName" : "BlockDetector",
     "description" : "Adds a detector item that indicates the location of arbitrary blocks.",
-    "dependencies" : [],
+    "dependencies" :
+    [
+        {"id": "Core", "minVersion": "1.0.0"}
+    ],
     "serverSideOnly" : false
 }

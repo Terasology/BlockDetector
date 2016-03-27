@@ -15,6 +15,8 @@
  */
 package org.terasology.blockdetector.utilities;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.terasology.audio.AudioManager;
 import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
@@ -28,6 +30,9 @@ import java.util.Set;
  * ranging from frequencyLow to frequencyHigh.
  */
 public class LinearAudioDetectorImpl extends DetectorData {
+    private static final Logger logger = LoggerFactory.getLogger(LinearAudioDetectorImpl.class);
+
+    // Getting a NPE from this.
     @In
     private AudioManager audioManager;
 
@@ -53,6 +58,9 @@ public class LinearAudioDetectorImpl extends DetectorData {
 
     @Override
     public void run() {
+        // Yep, it's null
+        logger.info("{}", audioManager);
+
         audioManager.playSound(Assets.getSound(audioUri).get());
     }
 }

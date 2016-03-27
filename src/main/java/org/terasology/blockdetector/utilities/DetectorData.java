@@ -15,8 +15,6 @@
  */
 package org.terasology.blockdetector.utilities;
 
-import com.google.common.base.Objects;
-
 import java.util.Set;
 
 /**

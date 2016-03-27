@@ -31,7 +31,7 @@ public class ExampleDetectorSystem extends BaseComponentSystem {
 
     @Override
     public void initialise() {
-        data = new LinearAudioDetectorImpl("Core:shovel", Sets.newHashSet("core:iris"), 32, "BlockDetector:ScannerBeep", 200, 2000);
+        data = new LinearAudioDetectorImpl("Core:shovel", Sets.newHashSet("core:Iris"), 32, "BlockDetector:ScannerBeep", 200, 2000);
         blockDetectorSystem.addDetector(data);
     }
 

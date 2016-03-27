@@ -1,6 +1,6 @@
 {
     "id" : "BlockDetector",
-    "version" : "1.0.0",
+    "version" : "1.0.1-SNAPSHOT",
     "author" : "rzats",
     "displayName" : "BlockDetector",
     "description" : "Adds a detector item that indicates the location of arbitrary blocks.",

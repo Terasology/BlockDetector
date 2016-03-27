@@ -27,7 +27,6 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.SelectedInventorySlotComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.monitoring.gui.ChunkMonitorDisplayEvent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.world.WorldProvider;
@@ -208,16 +207,14 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
         // Get the current player's selected inventory item.
         EntityRef player = localPlayer.getCharacterEntity();
 
-        if (player == null)
-        {
+        if (player == null) {
             shutdownTimer();
             return;
         }
 
         SelectedInventorySlotComponent selectedSlot = player.getComponent(SelectedInventorySlotComponent.class);
 
-        if (selectedSlot == null)
-        {
+        if (selectedSlot == null) {
             shutdownTimer();
             return;
         }
@@ -230,7 +227,7 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
 
         // Get the item's associated DetectorData, if it exists.
         DetectorData data = getDetectorData(itemUri);
-        
+
         if (data == null) {
             shutdownTimer();
             return;

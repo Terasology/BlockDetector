@@ -18,7 +18,6 @@ package org.terasology.blockdetector.utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.audio.AudioManager;
-import org.terasology.registry.In;
 import org.terasology.utilities.Assets;
 
 import java.util.Set;
@@ -27,13 +26,14 @@ import java.util.Set;
  * A DetectorData implementation containing information about an audio asset.
  * <p>
  * Plays the asset with a frequency scaling depending on the distance to the closest block,
- * ranging from frequencyLow to frequencyHigh.
+ * ranging from frequencyLow to frequencyHigh with four possible values.
  */
 public class LinearAudioDetectorImpl extends DetectorData {
     private static final Logger logger = LoggerFactory.getLogger(LinearAudioDetectorImpl.class);
 
-    // Getting a NPE from this.
-    @In
+    /**
+     * The audio manager. Should be injected in the custom system implementation.
+     */
     private AudioManager audioManager;
 
     /**
@@ -44,8 +44,11 @@ public class LinearAudioDetectorImpl extends DetectorData {
     private int frequencyLow;
     private int frequencyHigh;
 
-    public LinearAudioDetectorImpl(String detectorUri, Set<String> detectableUris, int range, String audioUri, int frequencyLow, int frequencyHigh) {
+    private int scaleCount = 4;
+
+    public LinearAudioDetectorImpl(String detectorUri, Set<String> detectableUris, int range, AudioManager audioManager, String audioUri, int frequencyLow, int frequencyHigh) {
         super(detectorUri, detectableUris, range);
+        this.audioManager = audioManager;
         this.audioUri = audioUri;
         this.frequencyLow = frequencyLow;
         this.frequencyHigh = frequencyHigh;
@@ -53,14 +56,12 @@ public class LinearAudioDetectorImpl extends DetectorData {
 
     @Override
     public int getPeriod(int minDistance) {
-        return frequencyLow + (frequencyHigh - frequencyLow) * minDistance / getRange();
+        int scale = (int) Math.floor(scaleCount * minDistance / getRange());
+        return frequencyLow + (frequencyHigh - frequencyLow) * scale / scaleCount;
     }
 
     @Override
     public void run() {
-        // Yep, it's null
-        logger.info("{}", audioManager);
-
         audioManager.playSound(Assets.getSound(audioUri).get());
     }
 }

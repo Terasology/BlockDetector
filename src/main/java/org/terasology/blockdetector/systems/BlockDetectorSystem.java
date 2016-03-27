@@ -17,7 +17,13 @@ package org.terasology.blockdetector.systems;
 
 import org.terasology.blockdetector.utilities.DetectorData;
 
+/**
+ * The block detector system interface.
+ * <p>
+ * Should be injected via @In in custom detector implementations.
+ */
 public interface BlockDetectorSystem {
     void addDetector(DetectorData data);
+
     void removeDetector(String detectorUri);
 }

@@ -16,6 +16,7 @@
 package org.terasology.blockdetector.systems;
 
 import com.google.common.collect.Sets;
+import org.terasology.audio.AudioManager;
 import org.terasology.blockdetector.utilities.DetectorData;
 import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
@@ -25,13 +26,16 @@ import org.terasology.registry.In;
 @RegisterSystem
 public class ExampleDetectorSystem extends BaseComponentSystem {
     @In
+    private AudioManager audioManager;
+
+    @In
     private BlockDetectorSystem blockDetectorSystem;
 
     private DetectorData data;
 
     @Override
     public void initialise() {
-        data = new LinearAudioDetectorImpl("Core:shovel", Sets.newHashSet("core:Iris"), 32, "BlockDetector:ScannerBeep", 200, 2000);
+        data = new LinearAudioDetectorImpl("Core:shovel", Sets.newHashSet("core:Iris"), 32, audioManager, "BlockDetector:ScannerBeep", 200, 2000);
         blockDetectorSystem.addDetector(data);
     }
 

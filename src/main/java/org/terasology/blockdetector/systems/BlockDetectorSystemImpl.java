@@ -27,6 +27,7 @@ import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.SelectedInventorySlotComponent;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.math.geom.Vector3i;
+import org.terasology.monitoring.gui.ChunkMonitorDisplayEvent;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.world.WorldProvider;
@@ -45,7 +46,7 @@ import java.util.TimerTask;
  */
 @RegisterSystem
 @Share(value = BlockDetectorSystem.class)
-public class BlockDetectorSystemImpl extends BaseComponentSystem implements UpdateSubscriberSystem, BlockDetectorSystem  {
+public class BlockDetectorSystemImpl extends BaseComponentSystem implements UpdateSubscriberSystem, BlockDetectorSystem {
     private static final Logger logger = LoggerFactory.getLogger(BlockDetectorSystemImpl.class);
 
     /**
@@ -91,11 +92,17 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      */
     private Timer timer;
 
+    /**
+     * The current task period, in ms.
+     */
+    private Integer taskPeriod;
+
     @Override
     public void initialise() {
         super.initialise();
 
         updatePeriod = 1.0f;
+        taskPeriod = null;
         if (detectors == null) {
             detectors = Maps.newHashMap();
         }
@@ -141,6 +148,8 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      * Does nothing if the task or timer are already shut down.
      */
     private void shutdownTimer() {
+        taskPeriod = null;
+
         if (timerTask != null) {
             timerTask.cancel();
             timerTask = null;
@@ -198,7 +207,22 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
 
         // Get the current player's selected inventory item.
         EntityRef player = localPlayer.getCharacterEntity();
-        EntityRef item = inventoryManager.getItemInSlot(player, player.getComponent(SelectedInventorySlotComponent.class).slot);
+
+        if (player == null)
+        {
+            shutdownTimer();
+            return;
+        }
+
+        SelectedInventorySlotComponent selectedSlot = player.getComponent(SelectedInventorySlotComponent.class);
+
+        if (selectedSlot == null)
+        {
+            shutdownTimer();
+            return;
+        }
+
+        EntityRef item = inventoryManager.getItemInSlot(player, selectedSlot.slot);
 
         if (item != EntityRef.NULL) {
             itemUri = item.getParentPrefab().getName();
@@ -206,6 +230,7 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
 
         // Get the item's associated DetectorData, if it exists.
         DetectorData data = getDetectorData(itemUri);
+        
         if (data == null) {
             shutdownTimer();
             return;
@@ -216,12 +241,10 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
 
         Set<Vector3i> detectedBlocks = new HashSet<>();
 
-        int cnt = 0;
         // Iterate through all the blocks within the detector's range.
         for (int x = playerPosition.x - data.getRange(); x <= playerPosition.x + data.getRange(); x++) {
             for (int y = playerPosition.y - data.getRange(); y <= playerPosition.y + data.getRange(); y++) {
                 for (int z = playerPosition.z - data.getRange(); z <= playerPosition.z + data.getRange(); z++) {
-                    cnt++;
                     // Get the current block.
                     Vector3i blockPosition = new Vector3i(x, y, z);
                     Block block = worldProvider.getBlock(blockPosition);
@@ -238,13 +261,8 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
             }
         }
 
-        logger.info("{} {}", cnt, data.getDetectableUris());
-
         if (detectedBlocks.size() > 0) {
             // Get the distance to the closest detectable block.
-
-            logger.info("Detector {}: {} blocks found", data.getDetectorUri(), detectedBlocks.size());
-
             int minDistance = Integer.MAX_VALUE;
             for (Vector3i block : detectedBlocks) {
                 int distance = (int) Math.sqrt(
@@ -254,16 +272,23 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
                 minDistance = Math.min(minDistance, distance);
             }
 
-            // Reset the timer.
-            shutdownTimer();
 
-            // Recreate the timer with the current detector's function.
-            initTimer(data);
+            // If taskPeriod is changed, reschedule the timer.
+            int newPeriod = data.getPeriod(minDistance);
 
-            logger.info("Detector {} scheduling task at period {} (minimal block distance: {})", data.getDetectorUri(), data.getPeriod(minDistance), minDistance);
+            if (taskPeriod == null || taskPeriod != newPeriod) {
+                logger.info("Detector {} rescheduling task at taskPeriod {} (minimal block distance: {})", data.getDetectorUri(), newPeriod, minDistance);
 
-            // Reschedule the timer.
-            timer.scheduleAtFixedRate(timerTask, 0, data.getPeriod(minDistance));
+                // Reset the timer.
+                shutdownTimer();
+
+                // Recreate the timer with the current detector's function.
+                initTimer(data);
+
+                taskPeriod = newPeriod;
+
+                timer.scheduleAtFixedRate(timerTask, 0, newPeriod);
+            }
         } else {
             shutdownTimer();
         }

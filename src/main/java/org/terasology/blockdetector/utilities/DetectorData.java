@@ -15,6 +15,8 @@
  */
 package org.terasology.blockdetector.utilities;
 
+import org.terasology.math.Region3i;
+
 import java.util.Set;
 
 /**
@@ -35,12 +37,10 @@ public abstract class DetectorData {
 
     /**
      * The range of the detector.
-     * <p>
-     * Will scan blocks in a cube centered on the player with an edge size of 2*range + 1.
      */
-    private int range;
+    private Region3i range;
 
-    protected DetectorData(String detectorUri, Set<String> detectableUris, int range) {
+    protected DetectorData(String detectorUri, Set<String> detectableUris, Region3i range) {
         this.detectorUri = detectorUri;
         this.detectableUris = detectableUris;
         this.range = range;
@@ -54,7 +54,7 @@ public abstract class DetectorData {
         return detectableUris;
     }
 
-    public int getRange() {
+    public Region3i getRange() {
         return range;
     }
 

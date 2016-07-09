@@ -1,0 +1,9 @@
+{
+    "parent": "engine:iconItem",
+    "DisplayName": {
+        "name": "Cave Detector"
+    },
+    "Item": {
+        "icon": "engine:items#shovel"
+    }
+}

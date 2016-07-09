@@ -18,6 +18,7 @@ package org.terasology.blockdetector.utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.audio.AudioManager;
+import org.terasology.math.Region3i;
 import org.terasology.utilities.Assets;
 
 import java.util.Set;
@@ -46,7 +47,7 @@ public class LinearAudioDetectorImpl extends DetectorData {
 
     private int scaleCount = 4;
 
-    public LinearAudioDetectorImpl(String detectorUri, Set<String> detectableUris, int range, AudioManager audioManager, String audioUri, int frequencyLow, int frequencyHigh) {
+    public LinearAudioDetectorImpl(String detectorUri, Set<String> detectableUris, Region3i range, AudioManager audioManager, String audioUri, int frequencyLow, int frequencyHigh) {
         super(detectorUri, detectableUris, range);
         this.audioManager = audioManager;
         this.audioUri = audioUri;
@@ -56,7 +57,7 @@ public class LinearAudioDetectorImpl extends DetectorData {
 
     @Override
     public int getPeriod(int minDistance) {
-        int scale = (int) Math.floor(scaleCount * minDistance / getRange());
+        int scale = (int) Math.floor(scaleCount * minDistance / getRange().size().length());
         return frequencyLow + (frequencyHigh - frequencyLow) * scale / scaleCount;
     }
 

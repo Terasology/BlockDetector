@@ -239,9 +239,9 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
         Set<Vector3i> detectedBlocks = new HashSet<>();
 
         // Iterate through all the blocks within the detector's range.
-        for (int x = playerPosition.x - data.getRange(); x <= playerPosition.x + data.getRange(); x++) {
-            for (int y = playerPosition.y - data.getRange(); y <= playerPosition.y + data.getRange(); y++) {
-                for (int z = playerPosition.z - data.getRange(); z <= playerPosition.z + data.getRange(); z++) {
+        for (int x = playerPosition.x + data.getRange().minX(); x <= playerPosition.x + data.getRange().maxX(); x++) {
+            for (int y = playerPosition.y + data.getRange().minY(); y <= playerPosition.y + data.getRange().maxY(); y++) {
+                for (int z = playerPosition.z + data.getRange().minZ(); z <= playerPosition.z + data.getRange().maxZ(); z++) {
                     // Get the current block.
                     Vector3i blockPosition = new Vector3i(x, y, z);
                     Block block = worldProvider.getBlock(blockPosition);

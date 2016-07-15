@@ -40,6 +40,12 @@ public abstract class DetectorData {
      */
     private Region3i range;
 
+    /**
+     * If this variable is not null, all blocks within the specified range
+     * must not be AIR or UNLOADED.
+     */
+    private Region3i nonAerialRange;
+
     protected DetectorData(String detectorUri, Set<String> detectableUris, Region3i range) {
         this.detectorUri = detectorUri;
         this.detectableUris = detectableUris;
@@ -56,6 +62,14 @@ public abstract class DetectorData {
 
     public Region3i getRange() {
         return range;
+    }
+
+    public Region3i getNonAerialRange() {
+        return nonAerialRange;
+    }
+
+    public void setNonAerialRange(Region3i nonAerialRange) {
+        this.nonAerialRange = nonAerialRange;
     }
 
     /**

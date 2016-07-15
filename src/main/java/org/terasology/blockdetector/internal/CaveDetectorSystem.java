@@ -44,6 +44,9 @@ public class CaveDetectorSystem extends BaseComponentSystem {
         Region3i range = Region3i.createFromMinMax(new Vector3i(-1, -55, -1), new Vector3i(1, -5, 1));
         data = new LinearAudioDetectorImpl("BlockDetector:caveDetector", Sets.newHashSet("engine:air"), range, audioManager, "BlockDetector:ScannerBeep", 250, 1000);
 
+        Region3i nonAerialRange = Region3i.createFromMinMax(new Vector3i(-3, -3, -3), new Vector3i(3, 3, 3));
+        data.setNonAerialRange(nonAerialRange);
+
         blockDetectorSystem.addDetector(data);
     }
 

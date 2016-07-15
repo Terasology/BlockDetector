@@ -31,6 +31,7 @@ import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.Block;
+import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 
 import java.math.RoundingMode;
@@ -47,6 +48,12 @@ import java.util.TimerTask;
 @Share(value = BlockDetectorSystem.class)
 public class BlockDetectorSystemImpl extends BaseComponentSystem implements UpdateSubscriberSystem, BlockDetectorSystem {
     private static final Logger logger = LoggerFactory.getLogger(BlockDetectorSystemImpl.class);
+
+    /**
+     * Used to retrieve the {@code AIR_ID} and {@code UNLOADED_ID} Urns.
+     */
+    @In
+    private BlockManager blockManager;
 
     /**
      * Used to get the block located at the specified position.
@@ -235,6 +242,32 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
 
         // Get the current block position rounded down.
         Vector3i playerPosition = new Vector3i(localPlayer.getPosition(), RoundingMode.FLOOR);
+
+        if (data.getNonAerialRange() != null) {
+            boolean nonAerialBlocksPresent = false;
+
+            for (int x = playerPosition.x + data.getNonAerialRange().minX(); x <= playerPosition.x + data.getNonAerialRange().maxX(); x++) {
+                for (int y = playerPosition.y + data.getNonAerialRange().minY(); y <= playerPosition.y + data.getNonAerialRange().maxY(); y++) {
+                    for (int z = playerPosition.z + data.getNonAerialRange().minZ(); z <= playerPosition.z + data.getNonAerialRange().maxZ(); z++) {
+                        // Get the current block.
+                        Vector3i blockPosition = new Vector3i(x, y, z);
+                        Block block = worldProvider.getBlock(blockPosition);
+
+                        // Get the block's Uri.
+                        BlockUri uri = block.getURI();
+
+                        if (!uri.equals(BlockManager.AIR_ID) && !uri.equals(BlockManager.UNLOADED_ID)) {
+                            nonAerialBlocksPresent = true;
+                        }
+                    }
+                }
+            }
+
+            if (!nonAerialBlocksPresent) {
+                shutdownTimer();
+                return;
+            }
+        }
 
         Set<Vector3i> detectedBlocks = new HashSet<>();
 

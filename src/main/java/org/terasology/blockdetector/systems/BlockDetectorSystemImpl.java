@@ -78,10 +78,26 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      */
     private Map<String, DetectorData> detectors;
 
+    public Map<String, DetectorData> getDetectors(){
+        return this.detectors;
+    }
+
     /**
      * The time since the last update call.
      */
     private float timeSinceLastUpdate;
+
+    /**
+     * This provides the value for the test
+     * @return a float of timeSinceLastUpdate
+     */
+    public float getTimeSinceLastUpdate(){
+        return this.timeSinceLastUpdate;
+    }
+
+    public void setTimeSinceLastUpdate(float value){
+        this.timeSinceLastUpdate = value;
+    }
 
     /**
      * The period at which the detectBlocks() function should be called.

@@ -15,10 +15,19 @@
  */
 package org.terasology.blockdetector.systems;
 
+import com.google.common.collect.Sets;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.internal.matchers.Contains;
+import org.terasology.audio.AudioManager;
+import org.terasology.blockdetector.utilities.DetectorData;
+import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
+import org.terasology.context.Context;
+import org.terasology.entitySystem.entity.EntityManager;
+import org.terasology.math.Region3i;
+import org.terasology.math.geom.Vector3i;
 import org.terasology.moduletestingenvironment.ModuleTestingEnvironment;
-import org.terasology.registry.CoreRegistry;
+import org.terasology.registry.In;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.BlockManager;
 
@@ -44,8 +53,32 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
     public void detectedBlockTest(){
         WorldProvider worldProvider = getHostContext().get(WorldProvider.class);
         BlockManager blockManager = getHostContext().get(BlockManager.class);
+
+        Context clientContext = createClient();
+
+        EntityManager hostEntityManager = getHostContext().get(EntityManager.class);
+
+        forceAndWaitForGeneration(obj.getPlayerPosition());
         worldProvider.setBlock(obj.getPlayerPosition(), blockManager.getBlock("engine:stone"));
         obj.detectBlocks();
         Assert.assertNotNull(obj.getDetectedBlocks());
+    }
+
+    private DetectorData data;
+
+    @In
+    private AudioManager audioManager;
+
+    @Test
+    public void detectorTest(){
+        Region3i range = Region3i.createFromMinMax(new Vector3i(-1, -55, -1), new Vector3i(1, -5, 1));
+        data = new LinearAudioDetectorImpl("BlockDetector:caveDetector", Sets.newHashSet("engine:air"), range, audioManager, "BlockDetector:ScannerBeep", 250, 1000);
+
+        Region3i nonAerialRange = Region3i.createFromMinMax(new Vector3i(-3, -3, -3), new Vector3i(3, 3, 3));
+        data.setNonAerialRange(nonAerialRange);
+
+        obj.addDetector(data);
+
+        Assert.assertEquals(this.data, obj.getDetectors());
     }
 }

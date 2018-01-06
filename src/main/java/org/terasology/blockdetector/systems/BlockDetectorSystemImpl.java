@@ -35,11 +35,7 @@ import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 
 import java.math.RoundingMode;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 /**
  * The main system containing all block detector logic.
@@ -224,7 +220,19 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     /**
      * The main block detection method.
      */
-    private void detectBlocks() {
+
+    public Vector3i getPlayerPosition(){
+        Vector3i playerPosToGive = new Vector3i(localPlayer.getPosition(), RoundingMode.FLOOR);
+        return playerPosToGive;
+    }
+
+    private Set<Vector3i> detectedBlocks = new HashSet<>();
+
+    public Set<Vector3i> getDetectedBlocks(){
+        return detectedBlocks;
+    }
+
+    public void detectBlocks() {
         String itemUri = null;
 
         // Get the current player's selected inventory item.
@@ -285,7 +293,6 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
             }
         }
 
-        Set<Vector3i> detectedBlocks = new HashSet<>();
 
         // Iterate through all the blocks within the detector's range.
         for (int x = playerPosition.x + data.getRange().minX(); x <= playerPosition.x + data.getRange().maxX(); x++) {

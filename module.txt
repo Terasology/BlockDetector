@@ -6,7 +6,8 @@
     "description" : "Adds a detector item that indicates the location of arbitrary blocks.",
     "dependencies" :
     [
-        {"id": "Core", "minVersion": "1.0.0"}
+        {"id": "Core", "minVersion": "1.0.0"},
+        {"id": "ModuleTestingEnvironment", "minVersion":"0.1.0"}
     ],
     "serverSideOnly" : false
 }

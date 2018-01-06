@@ -15,23 +15,37 @@
  */
 package org.terasology.blockdetector.systems;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.terasology.moduletestingenvironment.ModuleTestingEnvironment;
+import org.terasology.registry.CoreRegistry;
+import org.terasology.world.WorldProvider;
+import org.terasology.world.block.BlockManager;
 
 import static org.junit.Assert.*;
 
-public class BlockDetectorSystemTest {
+public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
 
     BlockDetectorSystemImpl obj = new BlockDetectorSystemImpl();
     @Test
     public void updateTest() {
         obj.setTimeSinceLastUpdate(5);
         obj.update(3);
-        assert(obj.getTimeSinceLastUpdate()==8);
+        Assert.assertEquals(8, obj.getTimeSinceLastUpdate());
     }
 
     @Test
     public void initialiseTest() {
         obj.initialise();
-        assert(obj.getDetectors()!=null);
+        Assert.assertNotNull(obj.getDetectors());
+    }
+
+    @Test
+    public void detectedBlockTest(){
+        WorldProvider worldProvider = getHostContext().get(WorldProvider.class);
+        BlockManager blockManager = getHostContext().get(BlockManager.class);
+        worldProvider.setBlock(obj.getPlayerPosition(), blockManager.getBlock("engine:stone"));
+        obj.detectBlocks();
+        Assert.assertNotNull(obj.getDetectedBlocks());
     }
 }

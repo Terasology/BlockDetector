@@ -11,3 +11,6 @@ This updateTest is created to test if the timeSinceLastUpdate is increased by de
 
 ### initialise
 This method should return the Detectors in not null condition. It's just running the method and check if Detectors is not null
+
+### detectorTest
+This detector test works most-likely like cave/easteregg detector. it places a new block at a current position and run the addDetector method. This test method runs it and check if the detector data is added to the map.

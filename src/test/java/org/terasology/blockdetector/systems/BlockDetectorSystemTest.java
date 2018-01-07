@@ -42,6 +42,9 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
 
     BlockDetectorSystemImpl obj = new BlockDetectorSystemImpl();
 
+    /* This updateTest is created to test if the timeSinceLastUpdate is increased by delta.
+    To make the system runs, we create a dummy local player so that the localPlayer data is not null and does not throw a null exception
+    */
     @Test
     public void updateTest() {
         //create a dummy local player
@@ -54,12 +57,20 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         Assert.assertEquals(8, obj.getTimeSinceLastUpdate(), 3);
     }
 
+    // This method should return the Detectors in not null condition. It's just running the method and check if Detectors is not null
     @Test
     public void initialiseTest() {
         obj.initialise();
         Assert.assertNotNull(obj.getDetectors());
     }
 
+   /* These test method is to test whether the method addDetector is functioning or not.
+   We use the same method CaveDetectorSystem to add.
+   Then we want to assert if the map contains the same data we want to be stored there.
+   When we try to get the values, it is started and ended with '[' and ']'.
+   Therefore, we use string data type so we can use substring to remove them.
+   Then we assert that both values (expected which is the data and actual which is the map value substring) are equal
+   */
     @Test
     public void detectedBlockTest(){
         WorldProvider worldProvider = getHostContext().get(WorldProvider.class);
@@ -80,6 +91,10 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         Assert.assertNotNull(obj.getDetectedBlocks());
     }
 
+    /* Inside this method, the detectedBlocks set will be added with a block if a block is detected.
+    First, we create a dummy local player to make the system runs and does not throw null exception.
+    Next is we place a block with worldprovider.setBlock -- and then we run the method and check if the detectedBlocks set is not null (filled with our block)
+    */
     @Test
     public void detectorTest(){
 

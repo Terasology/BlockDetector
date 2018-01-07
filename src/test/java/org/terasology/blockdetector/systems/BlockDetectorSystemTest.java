@@ -35,7 +35,13 @@ import org.terasology.world.block.BlockManager;
 
 public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
 
+    @In
+    private AudioManager audioManager;
+
+    private DetectorData data;
+
     BlockDetectorSystemImpl obj = new BlockDetectorSystemImpl();
+
     @Test
     public void updateTest() {
         //create a dummy local player
@@ -69,14 +75,10 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         forceAndWaitForGeneration(pos);
         worldProvider.setBlock(pos, blockManager.getBlock("engine:stone"));
         obj.detectBlocks();
+
         //at first, the detectedBlocks is null so it won't be null anymore if a new block is added
         Assert.assertNotNull(obj.getDetectedBlocks());
     }
-
-    private DetectorData data;
-
-    @In
-    private AudioManager audioManager;
 
     @Test
     public void detectorTest(){
@@ -86,6 +88,7 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         Region3i nonAerialRange = Region3i.createFromMinMax(new Vector3i(-3, -3, -3), new Vector3i(3, 3, 3));
         data.setNonAerialRange(nonAerialRange);
 
+        //Run the addDetector method
         obj.addDetector(data);
 
         //we use string because we want to modify the data (there are [ and ] that we don't want

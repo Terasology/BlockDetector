@@ -63,10 +63,6 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     @In
     private LocalPlayer localPlayer;
 
-    public void setLocalPlayer(LocalPlayer set){
-        this.localPlayer = set;
-    }
-
     /**
      * Used to get the player's current selected item.
      */
@@ -78,26 +74,10 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      */
     private Map<String, DetectorData> detectors;
 
-    public Map<String, DetectorData> getDetectors(){
-        return this.detectors;
-    }
-
     /**
      * The time since the last update call.
      */
     private float timeSinceLastUpdate;
-
-    /**
-     * This provides the value for the test
-     * @return a float of timeSinceLastUpdate
-     */
-    public float getTimeSinceLastUpdate(){
-        return this.timeSinceLastUpdate;
-    }
-
-    public void setTimeSinceLastUpdate(float value){
-        this.timeSinceLastUpdate = value;
-    }
 
     /**
      * The period at which the detectBlocks() function should be called.
@@ -118,6 +98,40 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      * The current task period, in ms.
      */
     private Integer taskPeriod;
+
+
+    /**
+    * This set the local player for the tests
+    * The dummy local player will make the system work and does not throw a null exception
+    * @param set the local player that going to be set through the test method
+    */
+    public void setLocalPlayer(LocalPlayer set){
+        this.localPlayer = set;
+    }
+
+    /**
+     * This provides the value for the test
+     * @return a float of timeSinceLastUpdate
+     */
+    public float getTimeSinceLastUpdate(){
+        return this.timeSinceLastUpdate;
+    }
+
+    /**
+    * This set the timeSinceLastUpdate value for the tests
+    * @param value a float of the value that going to be assigned to the variable
+    */
+    public void setTimeSinceLastUpdate(float value){
+        this.timeSinceLastUpdate = value;
+    }
+
+    /**
+    * This provides the DetectorData for the tests
+    * @return a Map of DetectorData
+    */
+    public Map<String, DetectorData> getDetectors(){
+        return this.detectors;
+    }
 
     @Override
     public void initialise() {

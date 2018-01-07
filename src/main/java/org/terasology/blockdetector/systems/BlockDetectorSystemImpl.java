@@ -63,6 +63,10 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     @In
     private LocalPlayer localPlayer;
 
+    public void setLocalPlayer(LocalPlayer set){
+        this.localPlayer = set;
+    }
+
     /**
      * Used to get the player's current selected item.
      */
@@ -221,16 +225,13 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      * The main block detection method.
      */
 
-    public Vector3i getPlayerPosition(){
-        Vector3i playerPosToGive = new Vector3i(localPlayer.getPosition(), RoundingMode.FLOOR);
-        return playerPosToGive;
-    }
 
     private Set<Vector3i> detectedBlocks = new HashSet<>();
 
     public Set<Vector3i> getDetectedBlocks(){
         return detectedBlocks;
     }
+
 
     public void detectBlocks() {
         String itemUri = null;

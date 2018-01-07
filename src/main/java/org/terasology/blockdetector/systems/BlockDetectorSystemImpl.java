@@ -35,7 +35,12 @@ import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 
 import java.math.RoundingMode;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+
 
 /**
  * The main system containing all block detector logic.
@@ -74,9 +79,6 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      */
     private Map<String, DetectorData> detectors;
 
-    /**
-     * The time since the last update call.
-     */
     private float timeSinceLastUpdate;
 
     /**
@@ -99,13 +101,14 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      */
     private Integer taskPeriod;
 
+    private Set<Vector3i> detectedBlocks = new HashSet<>();
 
     /**
     * This set the local player for the tests
     * The dummy local player will make the system work and does not throw a null exception
     * @param set the local player that going to be set through the test method
     */
-    public void setLocalPlayer(LocalPlayer set){
+    public void setLocalPlayer(LocalPlayer set) {
         this.localPlayer = set;
     }
 
@@ -113,7 +116,7 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      * This provides the value for the test
      * @return a float of timeSinceLastUpdate
      */
-    public float getTimeSinceLastUpdate(){
+    public float getTimeSinceLastUpdate() {
         return this.timeSinceLastUpdate;
     }
 
@@ -121,7 +124,7 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     * This set the timeSinceLastUpdate value for the tests
     * @param value a float of the value that going to be assigned to the variable
     */
-    public void setTimeSinceLastUpdate(float value){
+    public void setTimeSinceLastUpdate(float value) {
         this.timeSinceLastUpdate = value;
     }
 
@@ -129,7 +132,7 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     * This provides the DetectorData for the tests
     * @return a Map of DetectorData
     */
-    public Map<String, DetectorData> getDetectors(){
+    public Map<String, DetectorData> getDetectors() {
         return this.detectors;
     }
 
@@ -240,9 +243,8 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      */
 
 
-    private Set<Vector3i> detectedBlocks = new HashSet<>();
 
-    public Set<Vector3i> getDetectedBlocks(){
+    public Set<Vector3i> getDetectedBlocks() {
         return detectedBlocks;
     }
 

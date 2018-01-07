@@ -71,7 +71,7 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         obj.setLocalPlayer(clientContext.get(LocalPlayer.class));
 
         //place a block and check if it is detected
-        Vector3i pos = new Vector3i(1,1,1);
+        Vector3i pos = new Vector3i(1, 1, 1);
         forceAndWaitForGeneration(pos);
         worldProvider.setBlock(pos, blockManager.getBlock("engine:stone"));
         obj.detectBlocks();
@@ -88,7 +88,6 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         Region3i nonAerialRange = Region3i.createFromMinMax(new Vector3i(-3, -3, -3), new Vector3i(3, 3, 3));
         data.setNonAerialRange(nonAerialRange);
 
-        //Run the addDetector method
         obj.addDetector(data);
 
         //we use string because we want to modify the data (there are [ and ] that we don't want

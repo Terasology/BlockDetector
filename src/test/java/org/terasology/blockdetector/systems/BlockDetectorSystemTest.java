@@ -17,14 +17,11 @@ package org.terasology.blockdetector.systems;
 
 import com.google.common.collect.Sets;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.mockito.internal.matchers.Contains;
 import org.terasology.audio.AudioManager;
 import org.terasology.blockdetector.utilities.DetectorData;
 import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
 import org.terasology.context.Context;
-import org.terasology.entitySystem.entity.EntityManager;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.ResetCameraEvent;
 import org.terasology.math.Region3i;
@@ -34,10 +31,7 @@ import org.terasology.registry.In;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.BlockManager;
 
-import java.util.Set;
-import java.util.logging.Logger;
 
-import static org.junit.Assert.*;
 
 public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
 

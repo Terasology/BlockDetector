@@ -14,10 +14,10 @@ See [EasterEggDetectorSystem](src/main/java/org/terasology/blockdetector/easter/
 
 # Testing
 
-This module also have tests for the BlockDetectorSystemImpl class. You can find the code [here](src/test/java/org/terasology/blockdetector/systems)
-To run the test, just simply run the code from the IDE :)
-Unit Tests available for these methods :
-1). update
-2). initialise
-3). addDetector
-4). detectBlocks
+This module also has tests for the BlockDetectorSystemImpl class. You can find the code [here](src/test/java/org/terasology/blockdetector/systems).
+To run the test, simply run the code from the IDE :).
+Unit Tests are available for these methods:
+1) update
+2) initialise
+3) addDetector
+4) detectBlocks

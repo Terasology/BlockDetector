@@ -41,7 +41,6 @@ import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 
-
 /**
  * The main system containing all block detector logic.
  */
@@ -104,25 +103,19 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     private Set<Vector3i> detectedBlocks = new HashSet<>();
 
     /**
-    * This set the local player for the tests
+    * This sets the local player for the tests
     * The dummy local player will make the system work and does not throw a null exception
-    * @param set the local player that going to be set through the test method
     */
     public void setLocalPlayer(LocalPlayer set) {
         this.localPlayer = set;
     }
 
-    /**
-     * This provides the value for the test
-     * @return a float of timeSinceLastUpdate
-     */
     public float getTimeSinceLastUpdate() {
         return this.timeSinceLastUpdate;
     }
 
     /**
-    * This set the timeSinceLastUpdate value for the tests
-    * @param value a float of the value that going to be assigned to the variable
+    * This sets the timeSinceLastUpdate value for the tests
     */
     public void setTimeSinceLastUpdate(float value) {
         this.timeSinceLastUpdate = value;
@@ -130,7 +123,6 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
 
     /**
     * This provides the DetectorData for the tests
-    * @return a Map of DetectorData
     */
     public Map<String, DetectorData> getDetectors() {
         return this.detectors;
@@ -238,17 +230,13 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
         return detectors.getOrDefault(detectorUri, null);
     }
 
-    /**
-     * The main block detection method.
-     */
-
-
-
     public Set<Vector3i> getDetectedBlocks() {
         return detectedBlocks;
     }
 
-
+    /**
+     * The main block detection method.
+     */
     public void detectBlocks() {
         String itemUri = null;
 

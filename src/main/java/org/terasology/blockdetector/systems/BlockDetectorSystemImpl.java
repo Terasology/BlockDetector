@@ -103,8 +103,9 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     private Set<Vector3i> detectedBlocks = new HashSet<>();
 
     /**
-    * This sets the local player for the tests
+    * Sets the local player for the test
     * The dummy local player will make the system work and does not throw a null exception
+    * @param set A local player whose location component is used
     */
     public void setLocalPlayer(LocalPlayer set) {
         this.localPlayer = set;
@@ -123,6 +124,7 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
 
     /**
     * This provides the DetectorData for the tests
+    * @return a Map of DetectorData
     */
     public Map<String, DetectorData> getDetectors() {
         return this.detectors;

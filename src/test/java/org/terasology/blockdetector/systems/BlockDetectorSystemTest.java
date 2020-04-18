@@ -38,7 +38,7 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
 
     private DetectorData data;
 
-    BlockDetectorSystemImpl obj = new BlockDetectorSystemImpl();
+    BlockDetectorSystemImpl blockDetectorSystem = new BlockDetectorSystemImpl();
 
     /* This updateTest is created to test if the timeSinceLastUpdate is increased by delta.
     To make the system runs, we create a dummy local player so that the localPlayer data is not null and does not throw a null exception
@@ -48,18 +48,18 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         //create a dummy local player
         Context clientContext = createClient();
         clientContext.get(LocalPlayer.class).getClientEntity().send(new ResetCameraEvent());
-        obj.setLocalPlayer(clientContext.get(LocalPlayer.class));
+        blockDetectorSystem.setLocalPlayer(clientContext.get(LocalPlayer.class));
 
-        obj.setTimeSinceLastUpdate(5);
-        obj.update(3);
-        Assert.assertEquals(8, obj.getTimeSinceLastUpdate(), 3);
+        blockDetectorSystem.setTimeSinceLastUpdate(5);
+        blockDetectorSystem.update(3);
+        Assert.assertEquals(8, blockDetectorSystem.getTimeSinceLastUpdate(), 3);
     }
 
     // This method should return the Detectors in not null condition. It's just running the method and check if Detectors is not null
     @Test
     public void initialiseTest() {
-        obj.initialise();
-        Assert.assertNotNull(obj.getDetectors());
+        blockDetectorSystem.initialise();
+        Assert.assertNotNull(blockDetectorSystem.getDetectors());
     }
 
    /* These test method is to test whether the method addDetector is functioning or not.
@@ -77,16 +77,16 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         //create a dummy local player
         Context clientContext = createClient();
         clientContext.get(LocalPlayer.class).getClientEntity().send(new ResetCameraEvent());
-        obj.setLocalPlayer(clientContext.get(LocalPlayer.class));
+        blockDetectorSystem.setLocalPlayer(clientContext.get(LocalPlayer.class));
 
         //place a block and check if it is detected
         Vector3i pos = new Vector3i(1, 1, 1);
         forceAndWaitForGeneration(pos);
         worldProvider.setBlock(pos, blockManager.getBlock("engine:stone"));
-        obj.detectBlocks();
+        blockDetectorSystem.detectBlocks();
 
         //at first, the detectedBlocks is null so it won't be null anymore if a new block is added
-        Assert.assertNotNull(obj.getDetectedBlocks());
+        Assert.assertNotNull(blockDetectorSystem.getDetectedBlocks());
     }
 
     /* Inside this method, the detectedBlocks set will be added with a block if a block is detected.
@@ -100,10 +100,10 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
         Region3i nonAerialRange = Region3i.createFromMinMax(new Vector3i(-3, -3, -3), new Vector3i(3, 3, 3));
         data.setNonAerialRange(nonAerialRange);
 
-        obj.addDetector(data);
+        blockDetectorSystem.addDetector(data);
 
         //we use string because we want to modify the data (there are [ and ] that we don't want
-        String value = obj.getDetectors().values().toString();
+        String value = blockDetectorSystem.getDetectors().values().toString();
         //to compare them, they have to be in the same data type
         String dataToCompare = this.data.toString();
 

@@ -55,7 +55,7 @@ public class EasterEggDetectorSystem extends BaseComponentSystem {
     @Override
     public void initialise() {
         Region3i range = Region3i.createFromMinMax(new Vector3i(-40, -40, -40), new Vector3i(40, 40, 40));
-        data = new LinearAudioDetectorImpl("BlockDetector:easterEggDetector", Sets.newHashSet("core:Snow"), range, audioManager, "BlockDetector:ScannerBeep", 200, 2000);
+        data = new LinearAudioDetectorImpl("BlockDetector:easterEggDetector", Sets.newHashSet("CoreBlocks:Snow"), range, audioManager, "BlockDetector:ScannerBeep", 200, 2000);
 
         blockDetectorSystem.addDetector(data);
     }

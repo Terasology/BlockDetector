@@ -78,9 +78,6 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      */
     private Map<String, DetectorData> detectors;
 
-    /**
-     * The time since the last update call.
-     */
     private float timeSinceLastUpdate;
 
     /**
@@ -102,6 +99,36 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
      * The current task period, in ms.
      */
     private Integer taskPeriod;
+
+    private Set<Vector3i> detectedBlocks = new HashSet<>();
+
+    /**
+    * Sets the local player for the test
+    * The dummy local player will make the system work and does not throw a null exception
+    * @param set A local player whose location component is used
+    */
+    public void setLocalPlayer(LocalPlayer set) {
+        this.localPlayer = set;
+    }
+
+    public float getTimeSinceLastUpdate() {
+        return this.timeSinceLastUpdate;
+    }
+
+    /**
+    * This sets the timeSinceLastUpdate value for the tests
+    */
+    public void setTimeSinceLastUpdate(float value) {
+        this.timeSinceLastUpdate = value;
+    }
+
+    /**
+    * This provides the DetectorData for the tests
+    * @return a Map of DetectorData
+    */
+    public Map<String, DetectorData> getDetectors() {
+        return this.detectors;
+    }
 
     @Override
     public void initialise() {
@@ -205,10 +232,14 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
         return detectors.getOrDefault(detectorUri, null);
     }
 
+    public Set<Vector3i> getDetectedBlocks() {
+        return detectedBlocks;
+    }
+
     /**
      * The main block detection method.
      */
-    private void detectBlocks() {
+    public void detectBlocks() {
         String itemUri = null;
 
         // Get the current player's selected inventory item.
@@ -269,7 +300,6 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
             }
         }
 
-        Set<Vector3i> detectedBlocks = new HashSet<>();
 
         // Iterate through all the blocks within the detector's range.
         for (int x = playerPosition.x + data.getRange().minX(); x <= playerPosition.x + data.getRange().maxX(); x++) {

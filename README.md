@@ -10,3 +10,8 @@ See [EasterEggDetectorSystem](src/main/java/org/terasology/blockdetector/easter/
 ## Credits
 
 [ScannerBeep.ogg](assets/sounds/ScannerBeep.ogg) by kalisemorrison @ [freesound](https://www.freesound.org/people/kalisemorrison/sounds/202530/).
+
+
+# Testing
+
+This module comes with tests based on the [Terasology/ModuleTestingEnvironment](https://github.com/Terasology/ModuleTestingEnvironment) (MTE).

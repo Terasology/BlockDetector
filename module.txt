@@ -1,14 +1,14 @@
 {
-    "id" : "BlockDetector",
-    "version" : "1.3.0",
-    "author" : "rzats",
-    "displayName" : "BlockDetector",
-    "description" : "Adds a detector item that indicates the location of arbitrary blocks.",
-    "dependencies" :
-    [
-        {"id": "ModuleTestingEnvironment", "minVersion":"0.1.0"},
-        {"id" : "Inventory", "minVersion" : "1.1.0"}
+    "id": "BlockDetector",
+    "version": "1.3.0",
+    "author": "rzats",
+    "displayName": "BlockDetector",
+    "description": "Adds a detector item that indicates the location of arbitrary blocks.",
+    "dependencies": [
+        { "id": "ModuleTestingEnvironment", "minVersion":"0.1.0" },
+        { "id": "Inventory", "minVersion": "1.1.0" }
     ],
-    "serverSideOnly" : false,
-    "isAsset": true
+    "serverSideOnly": false,
+    "isAsset": true,
+    "isLibrary": true
 }

@@ -5,6 +5,7 @@
     "displayName": "BlockDetector",
     "description": "Adds a detector item that indicates the location of arbitrary blocks.",
     "dependencies": [
+        { "id": "CoreAssets", "minVersion": "2.0.0" },
         { "id": "Inventory", "minVersion": "1.1.0" },
         { "id": "ModuleTestingEnvironment", "minVersion":"0.1.0" }
     ],

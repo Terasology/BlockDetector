@@ -1,38 +1,25 @@
-/*
- * Copyright 2016 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.blockdetector.systems;
 
 import com.google.common.collect.Maps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.blockdetector.utilities.DetectorData;
-import org.terasology.entitySystem.entity.EntityRef;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
-import org.terasology.logic.inventory.InventoryManager;
-import org.terasology.logic.inventory.SelectedInventorySlotComponent;
-import org.terasology.logic.players.LocalPlayer;
+import org.terasology.engine.entitySystem.entity.EntityRef;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.entitySystem.systems.UpdateSubscriberSystem;
+import org.terasology.engine.logic.players.LocalPlayer;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.registry.Share;
+import org.terasology.engine.world.WorldProvider;
+import org.terasology.engine.world.block.Block;
+import org.terasology.engine.world.block.BlockManager;
+import org.terasology.engine.world.block.BlockUri;
+import org.terasology.inventory.logic.InventoryManager;
+import org.terasology.inventory.logic.SelectedInventorySlotComponent;
 import org.terasology.math.geom.Vector3i;
-import org.terasology.registry.In;
-import org.terasology.registry.Share;
-import org.terasology.world.WorldProvider;
-import org.terasology.world.block.Block;
-import org.terasology.world.block.BlockManager;
-import org.terasology.world.block.BlockUri;
 
 import java.math.RoundingMode;
 import java.util.HashSet;
@@ -46,67 +33,58 @@ import java.util.TimerTask;
  */
 @RegisterSystem
 @Share(value = BlockDetectorSystem.class)
-public class BlockDetectorSystemImpl extends BaseComponentSystem implements UpdateSubscriberSystem, BlockDetectorSystem {
+public class BlockDetectorSystemImpl extends BaseComponentSystem implements UpdateSubscriberSystem,
+        BlockDetectorSystem {
     private static final Logger logger = LoggerFactory.getLogger(BlockDetectorSystemImpl.class);
-
+    private final Set<Vector3i> detectedBlocks = new HashSet<>();
     /**
      * Used to retrieve the {@code AIR_ID} and {@code UNLOADED_ID} Urns.
      */
     @In
     private BlockManager blockManager;
-
     /**
      * Used to get the block located at the specified position.
      */
     @In
     private WorldProvider worldProvider;
-
     /**
      * Used to get the player's current position.
      */
     @In
     private LocalPlayer localPlayer;
-
     /**
      * Used to get the player's current selected item.
      */
     @In
     private InventoryManager inventoryManager;
-
     /**
      * The map of detector-detectable bindings.
      */
     private Map<String, DetectorData> detectors;
-
     private float timeSinceLastUpdate;
-
     /**
      * The period at which the detectBlocks() function should be called.
      */
     private float updatePeriod;
-
     /**
      * The current timer task associated with the timer.
      */
     private TimerTask timerTask;
-
     /**
      * The timer object calling timerTask periodically.
      */
     private Timer timer;
-
     /**
      * The current task period, in ms.
      */
     private Integer taskPeriod;
 
-    private Set<Vector3i> detectedBlocks = new HashSet<>();
-
     /**
-    * Sets the local player for the test
-    * The dummy local player will make the system work and does not throw a null exception
-    * @param set A local player whose location component is used
-    */
+     * Sets the local player for the test The dummy local player will make the system work and does not throw a null
+     * exception
+     *
+     * @param set A local player whose location component is used
+     */
     public void setLocalPlayer(LocalPlayer set) {
         this.localPlayer = set;
     }
@@ -116,16 +94,17 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     }
 
     /**
-    * This sets the timeSinceLastUpdate value for the tests
-    */
+     * This sets the timeSinceLastUpdate value for the tests
+     */
     public void setTimeSinceLastUpdate(float value) {
         this.timeSinceLastUpdate = value;
     }
 
     /**
-    * This provides the DetectorData for the tests
-    * @return a Map of DetectorData
-    */
+     * This provides the DetectorData for the tests
+     *
+     * @return a Map of DetectorData
+     */
     public Map<String, DetectorData> getDetectors() {
         return this.detectors;
     }
@@ -337,7 +316,8 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
             int newPeriod = data.getPeriod(minDistance);
 
             if (taskPeriod == null || taskPeriod != newPeriod) {
-                logger.info("Detector {} rescheduling task at taskPeriod {} (minimal block distance: {})", data.getDetectorUri(), newPeriod, minDistance);
+                logger.info("Detector {} rescheduling task at taskPeriod {} (minimal block distance: {})",
+                        data.getDetectorUri(), newPeriod, minDistance);
 
                 // Reset the timer.
                 shutdownTimer();

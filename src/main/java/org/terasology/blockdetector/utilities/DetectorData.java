@@ -1,21 +1,8 @@
-/*
- * Copyright 2016 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.blockdetector.utilities;
 
-import org.terasology.math.Region3i;
+import org.terasology.engine.math.Region3i;
 
 import java.util.Set;
 
@@ -28,21 +15,20 @@ public abstract class DetectorData {
     /**
      * The Uri of the detector item.
      */
-    private String detectorUri;
+    private final String detectorUri;
 
     /**
      * A set of detectable item Uris represented as strings.
      */
-    private Set<String> detectableUris;
+    private final Set<String> detectableUris;
 
     /**
      * The range of the detector.
      */
-    private Region3i range;
+    private final Region3i range;
 
     /**
-     * If this variable is not null, all blocks within the specified range
-     * must not be AIR or UNLOADED.
+     * If this variable is not null, all blocks within the specified range must not be AIR or UNLOADED.
      */
     private Region3i nonAerialRange;
 

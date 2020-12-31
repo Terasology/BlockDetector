@@ -27,6 +27,7 @@ import org.terasology.entitySystem.systems.RegisterSystem;
 import org.terasology.math.Region3i;
 import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.In;
+import org.terasology.world.block.BlockRegion;
 
 /**
  * A festive implementation example!
@@ -54,7 +55,7 @@ public class EasterEggDetectorSystem extends BaseComponentSystem {
     // Step 3: Create detector bindings in the initialise() method and add them to the blockDetectorSystem.
     @Override
     public void initialise() {
-        Region3i range = Region3i.createFromMinMax(new Vector3i(-40, -40, -40), new Vector3i(40, 40, 40));
+        BlockRegion range = new BlockRegion(-40, -40, -40, 40, 40, 40);
         data = new LinearAudioDetectorImpl("BlockDetector:easterEggDetector", Sets.newHashSet("CoreAssets:Snow"), range, audioManager, "BlockDetector:ScannerBeep", 200, 2000);
 
         blockDetectorSystem.addDetector(data);

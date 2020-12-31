@@ -22,9 +22,8 @@ import org.terasology.blockdetector.utilities.DetectorData;
 import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.math.Region3i;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.In;
+import org.terasology.world.block.BlockRegion;
 
 /**
  * A detector for caves, i.e. air located below the player.
@@ -41,10 +40,10 @@ public class CaveDetectorSystem extends BaseComponentSystem {
 
     @Override
     public void initialise() {
-        Region3i range = Region3i.createFromMinMax(new Vector3i(-1, -55, -1), new Vector3i(1, -5, 1));
+        BlockRegion range = new BlockRegion(-1, -55, -1, 1, -5, 1);
         data = new LinearAudioDetectorImpl("BlockDetector:caveDetector", Sets.newHashSet("engine:air"), range, audioManager, "BlockDetector:ScannerBeep", 250, 1000);
 
-        Region3i nonAerialRange = Region3i.createFromMinMax(new Vector3i(-3, -3, -3), new Vector3i(3, 3, 3));
+        BlockRegion nonAerialRange = new BlockRegion(-3, -3, -3, 3, 3, 3);
         data.setNonAerialRange(nonAerialRange);
 
         blockDetectorSystem.addDetector(data);

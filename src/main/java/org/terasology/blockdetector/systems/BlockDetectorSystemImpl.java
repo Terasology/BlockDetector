@@ -16,6 +16,9 @@
 package org.terasology.blockdetector.systems;
 
 import com.google.common.collect.Maps;
+import org.joml.RoundingMode;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.terasology.blockdetector.utilities.DetectorData;
@@ -26,7 +29,6 @@ import org.terasology.entitySystem.systems.UpdateSubscriberSystem;
 import org.terasology.logic.inventory.InventoryManager;
 import org.terasology.logic.inventory.SelectedInventorySlotComponent;
 import org.terasology.logic.players.LocalPlayer;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.In;
 import org.terasology.registry.Share;
 import org.terasology.world.WorldProvider;
@@ -34,7 +36,7 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 
-import java.math.RoundingMode;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -272,7 +274,7 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
         }
 
         // Get the current block position rounded down.
-        Vector3i playerPosition = new Vector3i(localPlayer.getPosition(), RoundingMode.FLOOR);
+        Vector3i playerPosition = new Vector3i(localPlayer.getPosition(new Vector3f()), RoundingMode.FLOOR);
 
         if (data.getNonAerialRange() != null) {
             boolean nonAerialBlocksPresent = false;
@@ -322,16 +324,12 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
         }
 
         if (detectedBlocks.size() > 0) {
-            // Get the distance to the closest detectable block.
-            int minDistance = Integer.MAX_VALUE;
-            for (Vector3i block : detectedBlocks) {
-                int distance = (int) Math.sqrt(
-                        Math.pow(block.getX() - playerPosition.getX(), 2)
-                                + Math.pow(block.getY() - playerPosition.getY(), 2)
-                                + Math.pow(block.getZ() - playerPosition.getZ(), 2));
-                minDistance = Math.min(minDistance, distance);
-            }
-
+            // Get the distance to the closest detectable block, MAX_VALUE if detectedBlocks is empty
+            int minDistance = detectedBlocks.stream()
+                    .map(block -> block.distanceSquared(playerPosition))
+                    .min(Comparator.comparing(Long::valueOf))
+                    .map(min -> (int) Math.sqrt(min))
+                    .orElse(Integer.MAX_VALUE);
 
             // If taskPeriod is changed, reschedule the timer.
             int newPeriod = data.getPeriod(minDistance);

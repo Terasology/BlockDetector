@@ -30,6 +30,7 @@ import org.terasology.moduletestingenvironment.ModuleTestingEnvironment;
 import org.terasology.registry.In;
 import org.terasology.world.WorldProvider;
 import org.terasology.world.block.BlockManager;
+import org.terasology.world.block.BlockRegion;
 
 public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
 
@@ -95,9 +96,9 @@ public class BlockDetectorSystemTest extends ModuleTestingEnvironment {
     */
     @Test
     public void detectorTest(){
-        Region3i range = Region3i.createFromMinMax(new Vector3i(-1, -55, -1), new Vector3i(1, -5, 1));
+        BlockRegion range = new BlockRegion(-1, -55, -1, 1, -5, 1);
         data = new LinearAudioDetectorImpl("BlockDetector:caveDetector", Sets.newHashSet("engine:air"), range, audioManager, "BlockDetector:ScannerBeep", 250, 1000);
-        Region3i nonAerialRange = Region3i.createFromMinMax(new Vector3i(-3, -3, -3), new Vector3i(3, 3, 3));
+        BlockRegion nonAerialRange = new BlockRegion(-3, -3, -3,3, 3, 3);
         data.setNonAerialRange(nonAerialRange);
 
         blockDetectorSystem.addDetector(data);

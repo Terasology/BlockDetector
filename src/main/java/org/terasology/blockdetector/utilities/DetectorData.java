@@ -15,7 +15,8 @@
  */
 package org.terasology.blockdetector.utilities;
 
-import org.terasology.math.Region3i;
+import org.terasology.world.block.BlockRegion;
+import org.terasology.world.block.BlockRegionc;
 
 import java.util.Set;
 
@@ -38,15 +39,14 @@ public abstract class DetectorData {
     /**
      * The range of the detector.
      */
-    private Region3i range;
+    private BlockRegion range;
 
     /**
-     * If this variable is not null, all blocks within the specified range
-     * must not be AIR or UNLOADED.
+     * If this variable is not null, all blocks within the specified range must not be AIR or UNLOADED.
      */
-    private Region3i nonAerialRange;
+    private BlockRegion nonAerialRange;
 
-    protected DetectorData(String detectorUri, Set<String> detectableUris, Region3i range) {
+    protected DetectorData(String detectorUri, Set<String> detectableUris, BlockRegion range) {
         this.detectorUri = detectorUri;
         this.detectableUris = detectableUris;
         this.range = range;
@@ -60,16 +60,20 @@ public abstract class DetectorData {
         return detectableUris;
     }
 
-    public Region3i getRange() {
+    public BlockRegionc getRange() {
         return range;
     }
 
-    public Region3i getNonAerialRange() {
+    public BlockRegionc getNonAerialRange() {
         return nonAerialRange;
     }
 
-    public void setNonAerialRange(Region3i nonAerialRange) {
-        this.nonAerialRange = nonAerialRange;
+    public void setNonAerialRange(BlockRegionc nonAerialRange) {
+        if (this.nonAerialRange != null) {
+            this.nonAerialRange.set(nonAerialRange);
+        } else {
+            this.nonAerialRange = new BlockRegion(nonAerialRange);
+        }
     }
 
     /**

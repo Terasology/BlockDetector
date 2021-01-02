@@ -15,7 +15,6 @@
  */
 package org.terasology.blockdetector.utilities;
 
-import org.terasology.math.Region3i;
 import org.terasology.world.block.BlockRegion;
 import org.terasology.world.block.BlockRegionc;
 
@@ -43,8 +42,7 @@ public abstract class DetectorData {
     private BlockRegion range;
 
     /**
-     * If this variable is not null, all blocks within the specified range
-     * must not be AIR or UNLOADED.
+     * If this variable is not null, all blocks within the specified range must not be AIR or UNLOADED.
      */
     private BlockRegion nonAerialRange;
 
@@ -71,7 +69,11 @@ public abstract class DetectorData {
     }
 
     public void setNonAerialRange(BlockRegionc nonAerialRange) {
-        this.nonAerialRange.set(nonAerialRange);
+        if (this.nonAerialRange != null) {
+            this.nonAerialRange.set(nonAerialRange);
+        } else {
+            this.nonAerialRange = new BlockRegion(nonAerialRange);
+        }
     }
 
     /**

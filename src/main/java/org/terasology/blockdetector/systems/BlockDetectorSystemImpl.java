@@ -36,6 +36,7 @@ import org.terasology.world.block.Block;
 import org.terasology.world.block.BlockManager;
 import org.terasology.world.block.BlockUri;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -323,16 +324,12 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
         }
 
         if (detectedBlocks.size() > 0) {
-            // Get the distance to the closest detectable block.
-            int minDistance = Integer.MAX_VALUE;
-            for (Vector3i block : detectedBlocks) {
-                int distance = (int) Math.sqrt(
-                        Math.pow(block.x() - playerPosition.x(), 2)
-                                + Math.pow(block.y() - playerPosition.y(), 2)
-                                + Math.pow(block.z() - playerPosition.z(), 2));
-                minDistance = Math.min(minDistance, distance);
-            }
-
+            // Get the distance to the closest detectable block, MAX_VALUE if detectedBlocks is empty
+            int minDistance = detectedBlocks.stream()
+                    .map(block -> block.distanceSquared(playerPosition))
+                    .min(Comparator.comparing(Long::valueOf))
+                    .map(min -> (int) Math.sqrt(min))
+                    .orElse(Integer.MAX_VALUE);
 
             // If taskPeriod is changed, reschedule the timer.
             int newPeriod = data.getPeriod(minDistance);

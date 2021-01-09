@@ -24,8 +24,6 @@ import org.terasology.blockdetector.utilities.DetectorData;
 import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
 import org.terasology.entitySystem.systems.BaseComponentSystem;
 import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.math.Region3i;
-import org.terasology.math.geom.Vector3i;
 import org.terasology.registry.In;
 import org.terasology.world.block.BlockRegion;
 

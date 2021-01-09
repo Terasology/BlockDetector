@@ -16,6 +16,7 @@
 package org.terasology.blockdetector.systems;
 
 import com.google.common.collect.Sets;
+import org.joml.Vector3i;
 import org.junit.Assert;
 import org.junit.Test;
 import org.terasology.audio.AudioManager;
@@ -24,8 +25,7 @@ import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
 import org.terasology.context.Context;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.ResetCameraEvent;
-import org.terasology.math.Region3i;
-import org.terasology.math.geom.Vector3i;
+import org.terasology.math.JomlUtil;
 import org.terasology.moduletestingenvironment.ModuleTestingEnvironment;
 import org.terasology.registry.In;
 import org.terasology.world.WorldProvider;

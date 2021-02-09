@@ -25,7 +25,6 @@ import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
 import org.terasology.context.Context;
 import org.terasology.logic.players.LocalPlayer;
 import org.terasology.logic.players.event.ResetCameraEvent;
-import org.terasology.math.JomlUtil;
 import org.terasology.moduletestingenvironment.ModuleTestingEnvironment;
 import org.terasology.registry.In;
 import org.terasology.world.WorldProvider;

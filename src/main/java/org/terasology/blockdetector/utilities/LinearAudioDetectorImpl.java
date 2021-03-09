@@ -18,9 +18,9 @@ package org.terasology.blockdetector.utilities;
 import org.joml.Vector3i;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.audio.AudioManager;
-import org.terasology.utilities.Assets;
-import org.terasology.world.block.BlockRegion;
+import org.terasology.engine.audio.AudioManager;
+import org.terasology.engine.utilities.Assets;
+import org.terasology.engine.world.block.BlockRegion;
 
 import java.util.Set;
 

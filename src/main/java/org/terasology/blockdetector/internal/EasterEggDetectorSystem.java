@@ -18,14 +18,14 @@ package org.terasology.blockdetector.internal;
 import com.google.common.collect.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.terasology.audio.AudioManager;
 import org.terasology.blockdetector.systems.BlockDetectorSystem;
 import org.terasology.blockdetector.utilities.DetectorData;
 import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
-import org.terasology.entitySystem.systems.BaseComponentSystem;
-import org.terasology.entitySystem.systems.RegisterSystem;
-import org.terasology.registry.In;
-import org.terasology.world.block.BlockRegion;
+import org.terasology.engine.audio.AudioManager;
+import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
+import org.terasology.engine.entitySystem.systems.RegisterSystem;
+import org.terasology.engine.registry.In;
+import org.terasology.engine.world.block.BlockRegion;
 
 /**
  * A festive implementation example!

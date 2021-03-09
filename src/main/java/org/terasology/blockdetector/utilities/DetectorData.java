@@ -15,8 +15,8 @@
  */
 package org.terasology.blockdetector.utilities;
 
-import org.terasology.world.block.BlockRegion;
-import org.terasology.world.block.BlockRegionc;
+import org.terasology.engine.world.block.BlockRegion;
+import org.terasology.engine.world.block.BlockRegionc;
 
 import java.util.Set;
 

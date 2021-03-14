@@ -34,6 +34,8 @@ import org.terasology.moduletestingenvironment.ModuleTestingHelper;
 import org.terasology.moduletestingenvironment.extension.Dependencies;
 import org.terasology.moduletestingenvironment.extension.UseWorldGenerator;
 
+import java.io.IOException;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -55,7 +57,7 @@ public class BlockDetectorSystemTest {
     To make the system runs, we create a dummy local player so that the localPlayer data is not null and does not throw a null exception
     */
     @Test
-    public void updateTest() {
+    public void updateTest() throws IOException {
         //create a dummy local player
         Context clientContext = helper.createClient();
         clientContext.get(LocalPlayer.class).getClientEntity().send(new ResetCameraEvent());
@@ -81,7 +83,7 @@ public class BlockDetectorSystemTest {
     Then we assert that both values (expected which is the data and actual which is the map value substring) are equal
     */
     @Test
-    public void detectedBlockTest() {
+    public void detectedBlockTest() throws IOException {
         WorldProvider worldProvider = helper.getHostContext().get(WorldProvider.class);
         BlockManager blockManager = helper.getHostContext().get(BlockManager.class);
 

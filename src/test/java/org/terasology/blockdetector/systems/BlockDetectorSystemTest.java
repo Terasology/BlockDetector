@@ -17,6 +17,7 @@ package org.terasology.blockdetector.systems;
 
 import com.google.common.collect.Sets;
 import org.joml.Vector3i;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.terasology.blockdetector.utilities.DetectorData;
@@ -42,6 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ExtendWith(MTEExtension.class)
 @UseWorldGenerator("ModuleTestingEnvironment:empty")
 @Dependencies({"BlockDetector"})
+@Tag("MteTest")
 public class BlockDetectorSystemTest {
 
     @In

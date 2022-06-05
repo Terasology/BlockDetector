@@ -1,21 +1,7 @@
-/*
- * Copyright 2016 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2022 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.blockdetector.systems;
 
-import com.google.common.collect.Maps;
 import org.joml.RoundingMode;
 import org.joml.Vector3f;
 import org.joml.Vector3i;
@@ -26,8 +12,6 @@ import org.terasology.engine.entitySystem.entity.EntityRef;
 import org.terasology.engine.entitySystem.systems.BaseComponentSystem;
 import org.terasology.engine.entitySystem.systems.RegisterSystem;
 import org.terasology.engine.entitySystem.systems.UpdateSubscriberSystem;
-import org.terasology.module.inventory.systems.InventoryManager;
-import org.terasology.module.inventory.components.SelectedInventorySlotComponent;
 import org.terasology.engine.logic.players.LocalPlayer;
 import org.terasology.engine.registry.In;
 import org.terasology.engine.registry.Share;
@@ -35,8 +19,11 @@ import org.terasology.engine.world.WorldProvider;
 import org.terasology.engine.world.block.Block;
 import org.terasology.engine.world.block.BlockManager;
 import org.terasology.engine.world.block.BlockUri;
+import org.terasology.module.inventory.components.SelectedInventorySlotComponent;
+import org.terasology.module.inventory.systems.InventoryManager;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -47,15 +34,9 @@ import java.util.TimerTask;
  * The main system containing all block detector logic.
  */
 @RegisterSystem
-@Share(value = BlockDetectorSystem.class)
+@Share(BlockDetectorSystem.class)
 public class BlockDetectorSystemImpl extends BaseComponentSystem implements UpdateSubscriberSystem, BlockDetectorSystem {
     private static final Logger logger = LoggerFactory.getLogger(BlockDetectorSystemImpl.class);
-
-    /**
-     * Used to retrieve the {@code AIR_ID} and {@code UNLOADED_ID} Urns.
-     */
-    @In
-    private BlockManager blockManager;
 
     /**
      * Used to get the block located at the specified position.
@@ -78,14 +59,14 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     /**
      * The map of detector-detectable bindings.
      */
-    private Map<String, DetectorData> detectors;
+    private final Map<String, DetectorData> detectors = new HashMap<>();
 
     private float timeSinceLastUpdate;
 
     /**
      * The period at which the detectBlocks() function should be called.
      */
-    private float updatePeriod;
+    float updatePeriod = 1.0f;
 
     /**
      * The current timer task associated with the timer.
@@ -100,9 +81,9 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     /**
      * The current task period, in ms.
      */
-    private Integer taskPeriod;
+    private Integer taskPeriod=null;
 
-    private Set<Vector3i> detectedBlocks = new HashSet<>();
+    private final Set<Vector3i> detectedBlocks = new HashSet<>();
 
     /**
     * Sets the local player for the test
@@ -130,17 +111,6 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     */
     public Map<String, DetectorData> getDetectors() {
         return this.detectors;
-    }
-
-    @Override
-    public void initialise() {
-        super.initialise();
-
-        updatePeriod = 1.0f;
-        taskPeriod = null;
-        if (detectors == null) {
-            detectors = Maps.newHashMap();
-        }
     }
 
     /**
@@ -205,9 +175,6 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     @Override
     public void addDetector(DetectorData data) {
         logger.info("Adding detector with item Uri {}", data.getDetectorUri());
-        if (detectors == null) {
-            detectors = Maps.newHashMap();
-        }
         detectors.put(data.getDetectorUri(), data);
     }
 
@@ -219,9 +186,7 @@ public class BlockDetectorSystemImpl extends BaseComponentSystem implements Upda
     @Override
     public void removeDetector(String detectorUri) {
         logger.info("Removing detector with item Uri {}", detectorUri);
-        if (detectors != null) {
-            detectors.remove(detectorUri);
-        }
+        detectors.remove(detectorUri);
     }
 
     /**

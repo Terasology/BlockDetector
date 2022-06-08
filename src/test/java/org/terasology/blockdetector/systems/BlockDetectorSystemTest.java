@@ -15,6 +15,10 @@ import org.terasology.engine.integrationenvironment.MainLoop;
 import org.terasology.engine.integrationenvironment.jupiter.Dependencies;
 import org.terasology.engine.integrationenvironment.jupiter.IntegrationEnvironment;
 import org.terasology.engine.integrationenvironment.jupiter.MTEExtension;
+import org.terasology.engine.integrationenvironment.ModuleTestingHelper;
+import org.terasology.engine.integrationenvironment.jupiter.Dependencies;
+import org.terasology.engine.integrationenvironment.jupiter.MTEExtension;
+import org.terasology.engine.integrationenvironment.jupiter.UseWorldGenerator;
 import org.terasology.engine.logic.players.LocalPlayer;
 import org.terasology.engine.network.NetworkMode;
 import org.terasology.engine.registry.In;
@@ -28,6 +32,7 @@ import org.terasology.module.inventory.systems.InventoryManager;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.Set;
 
 import static com.google.common.truth.Truth.assertThat;
 

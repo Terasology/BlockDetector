@@ -3,103 +3,66 @@
 package org.terasology.blockdetector.systems;
 
 import org.joml.Vector3i;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.terasology.blockdetector.utilities.DetectorData;
 import org.terasology.blockdetector.utilities.LinearAudioDetectorImpl;
 import org.terasology.engine.audio.AudioManager;
-import org.terasology.engine.context.Context;
+import org.terasology.engine.integrationenvironment.MainLoop;
+import org.terasology.engine.integrationenvironment.jupiter.Dependencies;
+import org.terasology.engine.integrationenvironment.jupiter.IntegrationEnvironment;
+import org.terasology.engine.integrationenvironment.jupiter.MTEExtension;
 import org.terasology.engine.integrationenvironment.ModuleTestingHelper;
 import org.terasology.engine.integrationenvironment.jupiter.Dependencies;
 import org.terasology.engine.integrationenvironment.jupiter.MTEExtension;
 import org.terasology.engine.integrationenvironment.jupiter.UseWorldGenerator;
 import org.terasology.engine.logic.players.LocalPlayer;
-import org.terasology.engine.logic.players.event.ResetCameraEvent;
+import org.terasology.engine.network.NetworkMode;
 import org.terasology.engine.registry.In;
 import org.terasology.engine.world.WorldProvider;
 import org.terasology.engine.world.block.BlockManager;
 import org.terasology.engine.world.block.BlockRegion;
+import org.terasology.module.inventory.components.InventoryItem;
+import org.terasology.module.inventory.components.SelectedInventorySlotComponent;
+import org.terasology.module.inventory.events.RequestInventoryEvent;
+import org.terasology.module.inventory.systems.InventoryManager;
 
-import java.io.IOException;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static com.google.common.truth.Truth.assertThat;
 
 @ExtendWith(MTEExtension.class)
-@UseWorldGenerator("unittest:dummy")
 @Dependencies("BlockDetector")
 @Tag("MteTest")
+@IntegrationEnvironment(networkMode = NetworkMode.NONE)
 public class BlockDetectorSystemTest {
 
-    BlockDetectorSystemImpl blockDetectorSystem = new BlockDetectorSystemImpl();
+    BlockDetectorSystemImpl blockDetectorSystem;
 
     @In
     private AudioManager audioManager;
-    @In
-    private ModuleTestingHelper helper;
+
+    @BeforeEach
+    public void getSystem(BlockDetectorSystem bdsInterface) {
+        blockDetectorSystem = (BlockDetectorSystemImpl) bdsInterface;
+    }
 
     /**
      * This updateTest is created to test if the timeSinceLastUpdate is increased by delta.
-     * To make the system runs, we create a dummy local player so that the localPlayer data is not null and does not
-     * throw a null exception
      */
     @Test
-    public void updateTest() throws IOException {
-        //create a dummy local player
-        Context clientContext = helper.createClient();
-        clientContext.get(LocalPlayer.class).getClientEntity().send(new ResetCameraEvent());
-        blockDetectorSystem.setLocalPlayer(clientContext.get(LocalPlayer.class));
-
+    public void updateTest() {
+        blockDetectorSystem.updatePeriod = 9999;  // big enough to not run in to during the test
         blockDetectorSystem.setTimeSinceLastUpdate(5);
         blockDetectorSystem.update(3);
-        assertEquals(8, blockDetectorSystem.getTimeSinceLastUpdate(), 3);
+        assertThat(blockDetectorSystem.getTimeSinceLastUpdate()).isEqualTo(5 + 3);
     }
 
-    /**
-     * This method should return the Detectors in not null condition. It's just running the method and check if
-     * Detectors is not null.
-     */
-    @Test
-    public void initialiseTest() {
-        blockDetectorSystem.initialise();
-        assertNotNull(blockDetectorSystem.getDetectors());
-    }
-
-    /**
-     * These test method is to test whether the method addDetector is functioning or not. We use the same method
-     * CaveDetectorSystem to add. Then we want to assert if the map contains the same data we want to be stored there.
-     * When we try to get the values, it is started and ended with '[' and ']'. Therefore, we use string data type so we
-     * can use substring to remove them. Then we assert that both values (expected which is the data and actual which is
-     * the map value substring) are equal.
-     */
-    @Test
-    public void detectedBlockTest() throws IOException {
-        WorldProvider worldProvider = helper.getHostContext().get(WorldProvider.class);
-        BlockManager blockManager = helper.getHostContext().get(BlockManager.class);
-
-        //create a dummy local player
-        Context clientContext = helper.createClient();
-        clientContext.get(LocalPlayer.class).getClientEntity().send(new ResetCameraEvent());
-        blockDetectorSystem.setLocalPlayer(clientContext.get(LocalPlayer.class));
-
-        //place a block and check if it is detected
-        Vector3i pos = new Vector3i(1, 1, 1);
-        helper.forceAndWaitForGeneration(pos);
-        worldProvider.setBlock(pos, blockManager.getBlock("engine:stone"));
-        blockDetectorSystem.detectBlocks();
-
-        //at first, the detectedBlocks is null so it won't be null anymore if a new block is added
-        assertNotNull(blockDetectorSystem.getDetectedBlocks());
-    }
-
-    /**
-     * Inside this method, the detectedBlocks set will be added with a block if a block is detected.
-     * First, we create a dummy local player to make the system runs and does not throw null exception.
-     * Next is we place a block with worldprovider.setBlock -- and then we run the method and check if the detectedBlocks set is not null
-     * (filled with our block)
-     */
     @Test
     public void detectorTest() {
         BlockRegion range = new BlockRegion(-1, -55, -1, 1, -5, 1);
@@ -111,12 +74,60 @@ public class BlockDetectorSystemTest {
 
         blockDetectorSystem.addDetector(data);
 
-        //we use string because we want to modify the data (there are [ and ] that we don't want
-        String value = blockDetectorSystem.getDetectors().values().toString();
-        //to compare them, they have to be in the same data type
-        String dataToCompare = data.toString();
+        assertThat(blockDetectorSystem.getDetectors())
+                .containsEntry(data.getDetectorUri(), data);
+    }
 
-        //we use substring because we don't want the '[' and ']' to be asserted
-        assertEquals(dataToCompare, value.substring(1, value.length() - 1));
+    @Nested
+    class PlayerDetectorTest {
+        public static final String BLOCK_URI = "CoreAssets:Snow";
+
+        @BeforeEach
+        void giveDetectorToPlayer(LocalPlayer player) {
+            var entity = player.getCharacterEntity();
+
+            var items = blockDetectorSystem.getDetectors().keySet().stream()
+                    .map(uri -> {
+                        var item = new InventoryItem();
+                        item.uri = uri;
+                        return item;
+                    })
+                    .collect(Collectors.toList());
+            entity.send(new RequestInventoryEvent(items));
+        }
+
+        @Test
+        void detectedBlockTest(LocalPlayer player, InventoryManager inventory,
+                             BlockManager blockManager, WorldProvider worldProvider,
+                             MainLoop main) {
+            var character = player.getCharacterEntity();
+
+            // The detector only works while the player has it selected,
+            // so we need to select it.
+            for (int slot = 0; slot < inventory.getNumSlots(character); slot++) {
+                var item = inventory.getItemInSlot(character, slot);
+                var prefab = item.getParentPrefab();
+                if (prefab == null || !item.exists()) {
+                    continue;
+                }
+                // FIXME: there's no way to know if this detector goes with a given BLOCK_URI
+                if (prefab.getName().startsWith("BlockDetector")) {
+                    final var selectedSlot = slot;
+                    character.updateComponent(SelectedInventorySlotComponent.class, selected -> {
+                        selected.slot = selectedSlot;
+                        return selected;
+                    });
+                    break;
+                }
+            }
+
+            //place a block and check if it is detected
+            Vector3i pos = new Vector3i(1, 1, 1);
+            main.runUntil(main.makeBlocksRelevant(new BlockRegion(pos)));
+            worldProvider.setBlock(pos, blockManager.getBlock(BLOCK_URI));
+            blockDetectorSystem.detectBlocks();
+
+            assertThat(blockDetectorSystem.getDetectedBlocks()).contains(pos);
+        }
     }
 }
